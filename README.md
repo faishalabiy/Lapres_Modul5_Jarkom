@@ -68,9 +68,151 @@ menyediakan script sebagai backup sehingga saat terjadi pertarungan final yang s
 sudah benar benar siap. Persiapkan diri kalian, banyak berdoa semoga yang hari ini bisa kalian
 lakukan juga berhasil saat hari besar itu tiba.
 
-=============================================================================================================================================
-
+=================================================================================================================
 Buat terlebih dahulu topologi uml seperti yang diminta pada soal.
 ![topologi](https://user-images.githubusercontent.com/36927436/69483095-b9c62100-0e55-11ea-9d5d-67a4f4e8cc53.png)
+
+Setelah membuat topologi, jalankan topologi tersebut dan setting network interfaces pada tiap UML.
+```
+nano /etc/network/interfaces
+```
+* PIKACHU
+```
+auto eth0
+iface eth0 inet static
+address 10.151.72.30
+netmask 255.255.255.252
+gateway 10.151.72.29
+
+auto eth1
+iface eth1 inet static
+address 192.168.0.5
+netmask 255.255.255.252
+
+auto eth2
+iface eth2 inet static
+address 192.168.0.1
+netmask 255.255.255.252
+```
+* BLASTOISE
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.2
+netmask 255.255.255.252
+gateway 192.168.0.1
+
+auto eth1
+iface eth1 inet static
+address 192.168.0.129
+netmask 255.255.255.128
+
+auto eth2
+iface eth2 inet static
+address 10.151.73.57
+netmask 255.255.255.248
+```
+* SNORLAX
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.130
+netmask 255.255.255.128
+gateway 192.168.0.129
+```
+* ARTICUNO
+```
+auto eth0
+iface eth0 inet static
+address 10.151.73.58
+netmask 255.255.255.248
+gateway 10.151.73.57
+```
+* MEW
+```
+auto eth0
+iface eth0 inet static
+address 10.151.73.59
+netmask 255.255.255.248
+gateway 10.151.73.57
+```
+* VENUSAUR
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.6
+netmask 255.255.255.252
+gateway 192.168.0.5
+
+auto eth1
+iface eth1 inet static
+address 192.168.0.9
+netmask 255.255.255.252
+
+auto eth2
+iface eth2 inet static
+address 192.168.1.0
+netmask 255.255.255.0
+```
+* PSYDUCK
+```
+auto eth0
+iface eth0 inet static
+address 192.168.1.2
+netmask 255.255.255.0
+gateway 192.168.1.1
+```
+* ARCEUS
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.10
+netmask 255.255.255.252
+gateway 192.168.0.9
+
+auto eth1
+iface eth1 inet static
+address 192.168.0.17
+netmask 255.255.255.248
+```
+* MOLTRES
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.18
+netmask 255.255.255.248
+gateway 192.168.0.17
+```
+* MEWTWO
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.19
+netmask 255.255.255.248
+gateway 192.168.0.17
+```
+Kemudian Export proxy pada setiap uml
+>nano proxy.sh
+
+isikan id password OTP
+```
+export http_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
+export https_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
+export ftp_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
+```
+
+Kemudian routing uml agar semua subnet dapat terhubung
+>nano route.sh
+
+* **PIKACHU**
+```
+route add -net 192.168.0.128 netmask 255.255.255.128 gw 192.168.0.2 
+route add -net 10.151.73.24 netmask 255.255.255.248 gw 192.168.0.2
+route add -net 192.168.0.8 netmask 255.255.255.252 gw 192.168.0.6
+route add -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.0.6
+route add -net 192.168.0.16 netmask 255.255.255.248 gw 192.168.0.6
+```
+
+
 
 
