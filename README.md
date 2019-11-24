@@ -213,6 +213,10 @@ export http_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
 export https_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
 export ftp_proxy="http://ITS-565458-284a4:ddeaa@proxy.its.ac.id:8080"
 ```
+Restart network pada semua UML agar perubahan dapat tersimpan
+```
+service networking restart
+```
 
 Kemudian routing uml agar semua subnet dapat terhubung
 >nano route.sh
@@ -250,6 +254,62 @@ mengkonfigurasi `PIKACHU` menggunakan iptables, namun Satoshi **melarang** kalia
 iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o eth0 -j SNAT --to-source 10.151.72.30
 ```
 10.151.72.30 ---> IP eth0 PIKACHU
+
+### No.2
+mendrop semua akses SSH dari luar Topologi (UML) Kalian pada server yang memiliki ip
+DMZ (DHCP dan DNS SERVER) pada `PIKACHU`
+
+Pada UML PIKACHU
+>nano no2.sh
+```
+iptables -A FORWARD -p tcp --dport 22 -d 10.151.73.57/29 -i eth0 -j DROP
+```
+10.151.73.57 ---> IP DMZ
+
+### No.3
+membatasi DHCP dan DNS server hanya boleh menerima maksimal 2 atau 3(jumlah kelompok)
+koneksi ICMP secara bersamaan yang berasal dari mana saja menggunakan iptables pada masing
+masing server , selebihnya akan di DROP.
+
+pada UML MEW dan ARTICUNO
+>nano no3.sh
+```
+iptables -A -p icmp -m connlimit --connlimit-above 2 --connlimit-mask 0 -j REJECT
+```
+
+### No.4
+mengkonfigurasi PIKACHU untuk dapat membedakan ketika MEW diakses dari subnet AJK, akan diarahkan pada MEWTWO dengan port 1234.
+
+pada UML PIKACHU
+>nano no4.sh
+```
+iptables -t nat -A PREROUTING -d 10.151.73.58 -s 10.151.36.0/24 -p tcp --dport 1234 -j DNAT --to-destination 192.168.1.130:1234
+```
+
+### No.5
+ketika diakses dari subnet INFORMATIKA akan diarahkan pada MOLTRES dengan port 1234. kemudian kalian diminta untuk membatasi akses ke MEW yang berasal dari SUBNET AJK
+
+>nano no5.sh
+```
+iptables -t nat -A PREROUTING -d 10.151.73.58 -s 10.151.252.0/22 -p tcp --dport 1234 -j DNAT --to-destination 192.168.1.131:1234
+```
+
+### No.6
+Akses dari subnet AJK **hanya diperbolehkan** pada pukul **08.00 - 17.00 pada hari Senin sampai Jumat**
+
+>nano no6.sh
+```
+iptables -A INPUT -s 10.151.36.0/24 -m time --timestart 08:00 --timestop 17:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT
+```
+
+### No.7
+Akses dari subnet INFORMATIKA **hanya diperbolehkan** pada pukul **17.00 hingga pukul 09.00 setiap harinya**. Selain itu paket akan di REJECT
+>nano no7.sh
+```
+iptables -A INPUT -s 10.151.252.0/22 -m time --timestart 09:01 --timestop 16:59 -j REJECT
+```
+
+
 
 
 
